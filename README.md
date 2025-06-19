@@ -1,7 +1,7 @@
 # appweb_RII_PyMieSim
 
 ## This repository contains a web app desgined to make calculations for the scattering, absorption and extinction efficiency factors (Qsca, Qabs and Qext) derived from the calculations of the Mie coefficients. 
-In order to execute the app, one should download the repository and move from their terminal to the "interface" directory; and from there, compute the commands:
+In order to execute the app, one should download the repository and move from their terminal to the "interface" directory; and from there, input the commands:
 
 1.) >>python main_app.py --> to use the main version of the app, which makes calculations using preexisting data from the Refractive Index Info database
 
