@@ -1,9 +1,6 @@
 #ESTA VERSIÓN CREA LA INTERFAZ USANDO PANEL
 
-#Objetivo: conectar la base de RefractiveIndex con la interfaz web
-
-#Actualizaciones respecto versión anterior: pretende incluir diámetro, intensidad, polarización
-#y AN como parámetros de entrada de las funciones solo_qsca y similar
+#OBJETIVO: CORREGIR ERRORES PARA DATOS DE N^2; K=0
 
 import panel as pn
 import pandas as pd
@@ -71,9 +68,12 @@ def info_completa_k(tipo, material, author):
     id = id_unico(tipo, material, author)
     info_k = db_operations.get_material_k_numpy(id)
     if info_k is None or len(info_k) == 0:
-        return [], []
-    long = [tupla[0] for tupla in info_k]
-    kappa = [tupla[1] for tupla in info_k]
+        info_k_var = db_operations.get_material_n_numpy(id)
+        long = [tupla[0] for tupla in info_k_var]
+        kappa = [0] * len(long)
+    else:
+        long = [tupla[0] for tupla in info_k]
+        kappa = [tupla[1] for tupla in info_k]
 
     return long, kappa
 
