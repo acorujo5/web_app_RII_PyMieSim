@@ -1,6 +1,7 @@
 #ESTA VERSIÓN CREA LA INTERFAZ USANDO PANEL
 
 #OBJETIVO: CORREGIR ERRORES PARA DATOS DE N^2; K=0
+#Objetivo: corregir funcionalidad para glass, organic
 
 import panel as pn
 import pandas as pd
@@ -37,24 +38,275 @@ db_operations = Database('C:/Users/usuario/Desktop/TFG/venv/PyMieSim_local/refra
 #---------------------------------------------------------------------------------------------
 # FUNCIONES OBTENCIÓN DE LOS DATOS DE LA BASE DE SQLITE (REFRACTIVE INDEX INFO)
 #---------------------------------------------------------------------------------------------
+aleaciones = ['Au-Ag', 'Cu-Zn', 'Nb-Sn', 'Ni-Fe', 'V-Ga']
+aleaciones_semicond = ['AlAs-GaAs', 'AlSb-GaSb', 'AlN-Al2O3', 'GaAs-InAs', 'GaP-InP', 'GaAs-InAs-GaP-InP', 'Si-Ge']
+cristales_mixtos = ['HfO2-Y2O3', 'In2O3-SnO2', 'TlBr-TlCl', 'TlBr-TlI', 'ZrO2-Y2O3']
+cristales_dopados = ['Mg-LiTaO3', 'Nb-RbTiOPO4', 'Al-ZnO']
+orga = ['(C8H8)n-(C3H3N)m', 'C6H4S4-C12H4N4', 'PTB7-PC71BM', 'P3HT-PC61BM']
+orga_inorga = ['Cu-C12H4N4', 'Li-C12H4N4']
+plasticos = ['CR-39', 'EVASKY_S87', 'EVASKY_S88', 'NAS-21', 'Optorez1330', 'ZeonexE48R']
+cristales_liquidos = ['5CB', '5PCH', 'E7', 'E44', 'MLC-6241-000', 'MLC-6608', 'MLC-9200-000', 'MLC-9200-100', 'TL-216']
+resis = ['pmma_resists', 'copolymer_resists', 'negative_tone_photoresists']
+cuerpo = ['blood', 'liver', 'colon', 'DNA']
+soot = ['acetylene_soot', 'propane_soot', 'diesel_soot']
+exot = ['metamaterials']
+clay = ['montmorillonite', 'kaolinite', 'illite']
+seda = ['Bombyx_mori', 'Antheraea_mylitta', 'Samia_ricini', 'Antheraea_assamensis']
 
 def id_unico(tipo,material,author):
-    nombre = str(tipo) + "\\" + str(material) + "\\" + str(author)
+    unico = ()
+    if tipo=='main':
+        nombre = str(tipo) + "\\" + str(material) + "\\" + str(author)
+    elif tipo=='other':
+        autor = author.lower()
+        if material=='air':
+            nombre = "mixed gases\\" + str(material) + "\\" + str(author)
+        elif material in aleaciones:
+            nombre = "alloys\\" + str(material) + "\\" + str(author)
+        elif material in aleaciones_semicond:
+            nombre = "semiconductor alloys\\" + str(material) + "\\" + str(author)
+        elif material=="AuAl2":
+            nombre = "intermetallics\\" + str(material) + "\\" + str(author)
+        elif material in cristales_mixtos:
+            nombre = "mixed crystals\\" + str(material) + "\\" + str(author)
+        elif material in cristales_dopados:
+            if author=="Carvajal-Î±":
+                nombre = "doped crystals\\" + str(material) + "\\Carvajal-alpha"
+            elif author=="Carvajal-Î²":
+                nombre = "doped crystals\\" + str(material) + "\\Carvajal-beta"
+            elif author=='Carvajal-Î³':
+                nombre = "doped crystals\\" + str(material) + "\\Carvajal-gamma"
+            else:
+                nombre = "doped crystals\\" + str(material) + "\\" + str(author)
+        elif material in orga:
+            nombre = "mixed organic\\" + str(material) + "\\" + str(author)
+        elif material in orga_inorga:
+            nombre = "mixed organic-inorganic\\" + str(material) + "\\" + str(author)
+        elif material in plasticos:
+            nombre = "commercial plastics\\" + str(material) + "\\" + str(author)
+        elif material in cristales_liquidos:
+            nombre = "liquid crystals\\" + str(material) + "\\" + str(author)
+        elif material=='SiN':
+            nombre = "anti-reflective coatings\\" + str(material) + "\\" + str(author)
+        elif material in cuerpo:
+            nombre = "human body\\" + str(material) + "\\" + str(author)
+        elif material in exot:
+            nombre = "exotic\\" + str(material) + "\\" + str(author)
+        elif material=='BK7_matching_liquid':
+            nombre = "index-matching liquids\\" + str(autor) + "\\" + str(material)
+        elif material=='acrylic_matching_liquid':
+            nombre = "index-matching liquids\\" + str(autor) + "\\" + str(material)
+        elif material in resis:
+            alpha = "other\\resists\\"
+            if material=='pmma_resists':
+                if author=='Microchem495':
+                    nombre = alpha + "Microchem 495"
+                elif author=='Microchem950':
+                    nombre = alpha + "Microchem 950"
+            elif material=='copolymer_resists':
+                nombre = alpha + "Microchem 8.5 mEL"
+            elif material=='negative_tone_photoresists':
+                if author=='MicroresistEpoCore':
+                    nombre = alpha + "Micro resist EpoCore"
+                elif author=='MicroresistEpoClad':
+                    nombre = alpha + "Micro resist EpoClad"
+                elif author=='Microchem_SU8_2000':
+                    nombre = alpha + "Microchem SU-8 2000"
+                elif author=='Microchem_SU8_3000':
+                    nombre = alpha + "Microchem SU-8 3000"
+        elif material=='CH3NH3PbI3':
+            nombre = "perovskite\\" + str(material) + "\\" + str(author)
+        elif material in soot:
+            alpha = "soots\\"
+            if material=='acetylene_soot':
+                nombre = alpha + "acetylene soot\\Dalzell"
+            elif material=='propane_soot':
+                nombre = alpha + "propane soot\\Dalzell"
+            elif material=='diesel_soot':
+                nombre = alpha + "diesel soot\\" + str(author)
+        elif material in clay:
+            alpha = "clays\\"
+            nombre = alpha + str(material) + "\\" + str(author)
+        elif material in seda:
+            alpha = "silk\\"
+            if material=='Bombyx_mori':
+                nombre = alpha + "Bombyx mori\\" + str(author)
+            elif material=='Antheraea_mylitta':
+                nombre = alpha + "Antheraea mylitta\\" + str(author)
+            elif material=='Samia_ricini':
+                nombre = alpha + "Samia ricini\\" + str(author)
+            elif material=='Antheraea_assamensis':
+                nombre = alpha + "Antheraea assamensis\\" + str(author)
+    elif tipo=='glass':
+        autor = author.lower()
+        if author=='SCHOTT':
+            if material=='FK51':
+                nombre = str(tipo) + "\\" + str(autor) + "\\N-" + str(material) + "A"
+            else:
+                nombre = str(tipo) + "\\" + str(autor) + "\\N-" + str(material) 
+        elif author=='OHARA':
+            if material=='BK7':
+                nombre = str(tipo) + "\\" + str(autor) + "\\S-BSL7"
+            elif material=='BAF10':
+                nombre = str(tipo) + "\\" + str(autor) + "\\S-BAH10"
+            elif material=='BAK1':
+                nombre = str(tipo) + "\\" + str(autor) + "\\S-BAL11"
+        elif author=='HIKARI':
+            if material=='BK7':
+                nombre = str(tipo) + "\\" + str(autor) + "\\J-BK7A"
+            else:
+                nombre = str(tipo) + "\\" + str(autor) + "\\J-" + str(material)
+        elif author=='CDGM':
+            if material=='BK7':
+                nombre = str(tipo) + "\\" + str(autor) + "\\H-K9L"
+            elif material=='BAF10':
+                nombre = str(tipo) + "\\" + str(autor) + "\\H-ZBAF52"
+            elif material=='BAK1':
+                nombre = str(tipo) + "\\" + str(autor) + "\\H-BAK8"
+            elif material=='SF5':
+                nombre = str(tipo) + "\\" + str(autor) + "\\ZF2"
+            elif material=='SF10':
+                nombre = str(tipo) + "\\" + str(autor) + "\\ZF4"
+            elif material=='SF11':
+                nombre = str(tipo) + "\\" + str(autor) + "\\ZF13"
+        elif author=="HOYA":
+            if material=='BK7':
+                nombre = str(tipo) + "\\" + str(autor) + "\\BSC7"
+            elif material=='BAF10':
+                nombre = str(tipo) + "\\" + str(autor) + "\\BAF10"
+            elif material=='SF5':
+                nombre = str(tipo) + "\\" + str(autor) + "\\E-FD5"
+            elif material=='SF10':
+                nombre = str(tipo) + "\\" + str(autor) + "\\E-FD10"
+        elif author=="SUMITA":
+            if material=='BK7':
+                nombre = str(tipo) + "\\" + str(autor) + "\\K-BK7"
+            elif material=='SF11':
+                nombre = str(tipo) + "\\" + str(autor) + "\\K-SFLD11"
+        elif author=="LZOS":
+            nombre = str(tipo) + "\\" + str(autor) + "\\K8"
+    elif tipo=='organic':
+        if material=='methane':
+            nombre = str(tipo) + "\\CH4 - " + str(material) + "\\" + str(author)
+        elif material=='ethane':
+            nombre = str(tipo) + "\\C2H6 - " + str(material) + "\\" + str(author)
+        elif material=='pentane':
+            nombre = str(tipo) + "\\C5H12 - " + str(material) + "\\" + str(author)
+        elif material=='hexane':
+            nombre = str(tipo) + "\\C6H14 - " + str(material) + "\\" + str(author)
+        elif material=='heptane':
+            nombre = str(tipo) + "\\C7H16 - " + str(material) + "\\" + str(author)
+        elif material=='octane':
+            nombre = str(tipo) + "\\C8H18 - " + str(material) + "\\" + str(author)
+        elif material=='acetylene':
+            nombre = str(tipo) + "\\C2H2 - " + str(material) + "\\" + str(author)
+        elif material=='ethylene':
+            nombre = str(tipo) + "\\C2H4 - " + str(material) + "\\" + str(author)
+        elif material=='methanol':
+            nombre = str(tipo) + "\\CH4O - " + str(material) + "\\" + str(author)
+        elif material=='ethanol':
+            nombre = str(tipo) + "\\C2H6O - " + str(material) + "\\" + str(author)
+        elif material=='propanol':
+            nombre = str(tipo) + "\\C3H8O - " + str(material) + "\\" + str(author)
+        elif material=='butanol':
+            nombre = str(tipo) + "\\C4H10O - " + str(material) + "\\" + str(author)
+        elif material=='pentanol':
+            nombre = str(tipo) + "\\C5H12O - " + str(material) + "\\" + str(author)
+        elif material=='octanol':
+            nombre = str(tipo) + "\\C8H18O - " + str(material) + "\\" + str(author)
+        elif material=='glycerol':
+            nombre = str(tipo) + "\\C3H8O3 - " + str(material) + "\\" + str(author)
+        elif material=='ethylene_glycol':
+            nombre = str(tipo) + "\\C2H6O2 - ethylene glycol\\" + str(author)
+        elif material=='propylene_glycol':
+            nombre = str(tipo) + "\\C3H8O2 - propylene glycol\\" + str(author)
+        elif material=='ethyl_acetate':
+            nombre = str(tipo) + "\\C4H8O2 - ethyl acetate\\" + str(author)
+        elif material=='methyl_salicylate':
+            nombre = str(tipo) + "\\C8H8O3 - methyl salicylate\\" + str(author)
+        elif material=='ethyl_salicylate':
+            nombre = str(tipo) + "\\C9H10O3 - ethyl salicylate\\" + str(author)
+        elif material=='ethyl_cinnamate':
+            nombre = str(tipo) + "\\C11H12O2 - ethyl cinnamate\\" + str(author)
+        elif material=='diethyl_phthalate':
+            nombre = str(tipo) + "\\C12H14O4 - diethyl phthalate\\" + str(author)
+        elif material=='cyclohexane':
+            nombre = str(tipo) + "\\C6H12 - cyclohexane\\" + str(author)
+        elif material=='benzene':
+            nombre = str(tipo) + "\\C6H6 - benzene\\" + str(author)
+        elif material=='styrene':
+            nombre = str(tipo) + "\\C8H8 - styrene\\" + str(author)
+        elif material=='toluene':
+            nombre = str(tipo) + "\\C7H8 - toluene\\" + str(author)
+        elif material=='nitrobenzene':
+            nombre = str(tipo) + "\\C6H5NO2 - nitrobenzene\\" + str(author)
+        elif material=='dioxane':
+            nombre = str(tipo) + "\\C4H8O2 - dioxane\\" + str(author)
+        elif material=='acetic_acid':
+            nombre = str(tipo) + "\\C2H4O2 - acetic acid\\" + str(author)
+        elif material=='pentanediol':
+            nombre = str(tipo) + "\\C5H12O2 - pentanediol\\" + str(author)
+        elif material=='acetone':
+            nombre = str(tipo) + "\\C3H6O - acetone\\" + str(author)
+        elif material=='bromoform':
+            nombre = str(tipo) + "\\CHBr3 - bromoform\\" + str(author)
+        elif material=='dichloromethane':
+            nombre = str(tipo) + "\\CH2Cl2 - dichloromethane\\" + str(author)
+        elif material=='chloroform':
+            nombre = str(tipo) + "\\CHCl3 - chloroform\\" + str(author)
+        elif material=='carbon_tetrachloride':
+            nombre = str(tipo) + "\\CCl4 - carbon tetrachloride\\" + str(author)
+        elif material=='acetonitrile':
+            nombre = str(tipo) + "\\C2H3N - acetonitrile\\" + str(author)
+        elif material=='urea':
+            nombre = str(tipo) + "\\CH4N2O - urea\\" + str(author)
+        elif material=='dimethyl_sulfoxide':
+            nombre = str(tipo) + "\\C2H6OS - dimethyl sulfoxide\\" + str(author)
+        elif material=='dimethyl_methylphosphonate':
+            nombre = str(tipo) + "\\C3H9O3P - dimethyl methylphosphonate\\" + str(author)
+        elif material=='diethyl_sulfite':
+            nombre = str(tipo) + "\\C4H10O3S - diethyl sulfite\\" + str(author)
+        elif material=='diisopropyl_methylphosphonate':
+            nombre = str(tipo) + "\\C7H17O3P -  diisopropyl methylphosphonate\\" + str(author)
+        elif material=='potassium_hydrogen_phthalate':
+            nombre = str(tipo) + "\\C8H5KO4 - potassium hydrogen phthalate\\" + str(author)
+        elif material=='cinnamaldehyde':
+            nombre = str(tipo) + "\\C9H8O - cinnamaldehyde\\" + str(author)
+        elif material=='polyvinyl_alcohol':
+            nombre = str(tipo) + "\\(C2H4O)n - polyvinyl alcohol\\" + str(author)
+        elif material=='polydimethylsiloxane':
+            nombre = str(tipo) + "\\(C2H6OSi)n - polydimethylsiloxane\\" + str(author)
+        elif material=='polylactic_acid':
+            nombre = str(tipo) + "\\(C3H4O2)n - polylactic acid\\" + str(author)
+        elif material=='poly(methyl_methacrylate)':
+            nombre = str(tipo) + "\\(C5H8O2)n - poly(methyl methacrylate)\\" + str(author)
+        elif material=='polyvinylpyrrolidone':
+            nombre = str(tipo) + "\\(C6H9NO)n - polyvinylpyrrolidone\\" + str(author)
+        elif material=='cellulose':
+            nombre = str(tipo) + "\\(C6H10O5)n - cellulose\\" + str(author)
+        elif material=='poly(N-isopropylacrylamide)':
+            nombre = str(tipo) + "\\(C6H11NO)n - poly(N-isopropylacrylamide)\\" + str(author)
+        elif material=='polystyren':
+            nombre = str(tipo) + "\\(C8H8)n - polystyren\\" + str(author)
+        elif material=='polycarbonate':
+            nombre = str(tipo) + "\\(C16H14O3)n - polycarbonate\\" + str(author)
     list_of_pages = db_operations.search_pages(nombre)
 
     # Comprobar que hay resultados
     if not list_of_pages:
-        return []
+        return None
 
     # Suponiendo que cada fila es una lista o tupla, y que el primer elemento es el ID
     ids = [fila[0] for fila in list_of_pages]
     unico = ids[0]
-
+    print(f"[DEBUG] Nombre buscado: {nombre}")
+    print(f"[DEBUG] Resultados: {list_of_pages}")
     return unico
 
 
 def info_completa_n(tipo, material, author):
     id = id_unico(tipo, material, author)
+    print(f"[DEBUG] pageid: {id}, tipo: {type(id)}")
     info_n = db_operations.get_material_n_numpy(id)
     if info_n is None or len(info_n) == 0:
         return [], []
@@ -66,6 +318,7 @@ def info_completa_n(tipo, material, author):
 
 def info_completa_k(tipo, material, author):
     id = id_unico(tipo, material, author)
+    print(f"[DEBUG] pageid: {id}, tipo: {type(id)}")
     info_k = db_operations.get_material_k_numpy(id)
     if info_k is None or len(info_k) == 0:
         info_k_var = db_operations.get_material_n_numpy(id)
@@ -266,7 +519,6 @@ def solo_qext(tipo, material, author, diametro, pol, inten, AN):
         diametro = [1000]
 
     for longitud_de_onda, complex_n in zip(long, n_complejo):
-        #print(f"Processing wavelength: {longitud_de_onda}, n_complejo: {complex_n}")  # Debugging line
         source = Gaussian(
             wavelength=longitud_de_onda * micrometer,
             polarization=float(polarización) * degree,
@@ -283,7 +535,6 @@ def solo_qext(tipo, material, author, diametro, pol, inten, AN):
         
         experiment = Setup(scatterer=scatterer, source=source)
         qext = experiment.get('Qext', as_numpy=True)
-        #print(f"Qext: {qext}")  # Verifica si Qext se está calculando correctamente
         qext_values.append(qext.tolist())
     return long, qext_values
 
@@ -352,9 +603,11 @@ def datos_imprimir2(tipo,material,author, diametro, pol, inten, AN):
 #---------------------------------------------------------------------------------------------
 # WIDGETS 1 - SELECCIÓN DE UN TIPO, MATERIAL Y AUTOR CONCRETO
 #---------------------------------------------------------------------------------------------
+shelves = db_operations.get_all_shelves()
+shelves_filtered = [shelf for shelf in shelves if shelf != '3d']
 
 # SELECCIÓN DE LOS DATOS POR EL USUARIO + BOTÓN PARA SIGUIENTE FASE:
-material1_dropdown = pn.widgets.Select(name='Material type', options=db_operations.get_all_shelves(), width=340)
+material1_dropdown = pn.widgets.Select(name='Material type', options=shelves_filtered, width=340)
 material2_dropdown = pn.widgets.Select(name='Material', options=[], width=340)
 material3_dropdown = pn.widgets.Select(name='Reference', options=[], width=340)
 boton_mostrar = pn.widgets.Button(name='Show table', button_type='primary')
@@ -368,7 +621,20 @@ def update_material_dropdown(event=None):
     lista_materiales = []
     tipo = material1_dropdown.value
     lista_materiales = db_operations.get_books_in_shelf(tipo)
-    material2_dropdown.options = lista_materiales
+
+    if tipo=='organic':
+        valores_a_descartar = ['ethylene_glycol', 'propylene_glycol', 'diisopropyl_methylphosphonate', 'potassium_hydrogen_phthalate'] 
+        filtered_list = [material for material in lista_materiales if material not in valores_a_descartar]
+    elif tipo=='glass':
+        valores_a_incluir = ['BK7', 'BAF10', 'BAK1', 'FK51', 'LASF9', 'SF5', 'SF10', 'SF11']
+        filtered_list = [material for material in lista_materiales if material in valores_a_incluir]
+    elif tipo=='other':
+        valores_a_descartar = ['fused_silica_matching_liquid', 'TherminolVP-1', 'Optical adhesives', 'Leica_Type_F', 'Olympus_IMMOIL-F30CC', 'Sigma_Aldrich_M5904']
+        filtered_list = [material for material in lista_materiales if material not in valores_a_descartar]
+    else:
+        filtered_list = lista_materiales
+
+    material2_dropdown.options = filtered_list
 
 material1_dropdown.param.watch(update_material_dropdown, 'value')
 update_material_dropdown()
