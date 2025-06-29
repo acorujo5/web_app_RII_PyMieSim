@@ -56,7 +56,73 @@ seda = ['Bombyx_mori', 'Antheraea_mylitta', 'Samia_ricini', 'Antheraea_assamensi
 def id_unico(tipo,material,author):
     unico = ()
     if tipo=='main':
-        nombre = str(tipo) + "\\" + str(material) + "\\" + str(author)
+        if material=='BiB3O6':
+            if author=='Umemura-Î±':
+                nombre = str(tipo) + "\\" + str(material) + "\\Umemura-alpha"
+            elif author=='Umemura-Î²':
+                nombre = str(tipo) + "\\" + str(material) + "\\Umemura-beta"
+            elif author=='Umemura-Î³':
+                nombre = str(tipo) + "\\" + str(material) + "\\Umemura-gamma"
+        elif material=='LiB3O5':
+            if author=='Chen-Î±':
+                nombre = str(tipo) + "\\" + str(material) + "\\Chen-alpha"
+            elif author=='Chen-Î²':
+                nombre = str(tipo) + "\\" + str(material) + "\\Chen-beta"
+            elif author=='Chen-Î³':
+                nombre = str(tipo) + "\\" + str(material) + "\\Chen-gamma"
+        elif material=='AgBr':
+            nombre = str(tipo) + "\\" + str(material) + "\\Schroter"
+        elif material=='Co':
+            if author=='Smith':
+                nombre = str(tipo) + "\\" + str(material) + "1\\" + str(author)
+            else:
+                nombre = str(tipo) + "\\" + str(material) + "\\" + str(author)
+        elif material=='KNbO3':
+            if author=='Umemura-Î±':
+                nombre = str(tipo) + "\\" + str(material) + "\\Umemura-alpha"
+            elif author=='Umemura-Î²':
+                nombre = str(tipo) + "\\" + str(material) + "\\Umemura-beta"
+            elif author=='Umemura-Î³':
+                nombre = str(tipo) + "\\" + str(material) + "\\Umemura-gamma"
+        elif material=='H2O':
+            if author=='Asfar-H2O':
+                nombre = str(tipo) + "\\" + str(material) + "\\Asfar"
+            elif author=='Kedenburg-D2O':
+                nombre = str(tipo) + "\\D2O\\Kedenburg"
+            elif author=='Asfar-D2O':
+                nombre = str(tipo) + "\\D2O\\Asfar"
+            else:
+                nombre = str(tipo) + "\\" + str(material) + "\\" + str(author)
+        #elif material=='MoO3':
+        #    if author=='Lajaunie-Î±':
+        #        nombre = str(tipo) + "\\" + str(material) + "\\Lajaunie-alpha"
+        #    elif author=='Lajaunie-Î²':
+        #        nombre = str(tipo) + "\\" + str(material) + "\\Lajaunie-beta"
+        #    elif author=='Lajaunie-Î³':
+        #        nombre = str(tipo) + "\\" + str(material) + "\\Lajaunie-gamma"
+        elif material=='KTiOPO4':
+            if author=='Kato-Î±':
+                nombre = str(tipo) + "\\" + str(material) + "\\Kato-alpha"
+            elif author=='Kato-Î²':
+                nombre = str(tipo) + "\\" + str(material) + "\\Kato-beta"
+            elif author=='Kato-Î³':
+                nombre = str(tipo) + "\\" + str(material) + "\\Kato-gamma"
+        elif material=='RbTiOPO4':
+            if author=='Carvajal-Î±':
+                nombre = str(tipo) + "\\" + str(material) + "\\Carvajal-alpha"
+            elif author=='Carvajal-Î²':
+                nombre = str(tipo) + "\\" + str(material) + "\\Carvajal-beta"
+            elif author=='Carvajal-Î³':
+                nombre = str(tipo) + "\\" + str(material) + "\\Carvajal-gamma"
+        elif material=='CaSO4':
+            if author=='Querry-Î±':
+                nombre = str(tipo) + "\\" + str(material) + "\\Querry-alpha"
+            elif author=='Querry-Î²':
+                nombre = str(tipo) + "\\" + str(material) + "\\Querry-beta"
+            elif author=='Querry-Î³':
+                nombre = str(tipo) + "\\" + str(material) + "\\Querry-gamma"
+        else:
+            nombre = str(tipo) + "\\" + str(material) + "\\" + str(author)
     elif tipo=='other':
         autor = author.lower()
         if material=='air':
@@ -550,29 +616,34 @@ def plotear_todo(tipo,material,author, diametro, pol, inten, AN):
     long, qext_values = solo_qext(tipo, material, author, diametro, pol, inten, AN)
 
     fig = go.Figure()
+
     fig.add_trace(go.Scatter(
         x=long, y=qsca_values,
-        mode='lines',
-        name='Qsca'
+        mode='lines+markers',
+        name='Qsca',
+        marker=dict(symbol='circle', size=8)
     ))
 
     fig.add_trace(go.Scatter(
         x=long, y=qabs_values,
-        mode='lines',
-        name='Qabs'
+        mode='lines+markers',
+        name='Qabs',
+        marker=dict(symbol='triangle-up', size=8)
     ))
-    
+
     fig.add_trace(go.Scatter(
         x=long, y=qext_values,
-        mode='lines',
-        name='Qext'
+        mode='lines+markers',
+        name='Qext',
+        marker=dict(symbol='square', size=8)
     ))
 
     fig.update_layout(
         title='Efficiency factors',
         xaxis_title='λ (μm)',
         yaxis_title='',
-        legend_title=''
+        legend_title='',
+        template='plotly_white'  # Fondo blanco para mejor contraste
     )
 
     return fig
@@ -631,6 +702,9 @@ def update_material_dropdown(event=None):
     elif tipo=='other':
         valores_a_descartar = ['fused_silica_matching_liquid', 'TherminolVP-1', 'Optical adhesives', 'Leica_Type_F', 'Olympus_IMMOIL-F30CC', 'Sigma_Aldrich_M5904']
         filtered_list = [material for material in lista_materiales if material not in valores_a_descartar]
+    elif tipo=='main':
+        valores_a_descartar = ['B', 'B4C', 'Ce', 'Er', 'Eu', 'GaSe', 'Ho', 'Lu', 'Mg', 'SiO', 'Pr', 'Sr', 'Tm', 'Yb', 'HfO2', 'ZrO2', 'GaSb']
+        filtered_list = [material for material in lista_materiales if material not in valores_a_descartar]
     else:
         filtered_list = lista_materiales
 
@@ -645,7 +719,51 @@ def update_author_dropdown(event=None):
     tipo = material1_dropdown.value
     mat = material2_dropdown.value
     lista_autores = db_operations.get_author(tipo, mat)
-    material3_dropdown.options = lista_autores
+
+    if tipo=='main':
+        if mat=='H2O':
+            valores_a_descartar = ['Wang', 'Wang-D2O', 'Segelstein']
+            filtered_list = [autor for autor in lista_autores if autor not in valores_a_descartar]
+        elif mat=='Ag':
+            valores_a_descartar = ['Hagemann']
+            filtered_list = [autor for autor in lista_autores if autor not in valores_a_descartar]
+        elif mat=='Al':
+            valores_a_descartar = ['Hagemann']
+            filtered_list = [autor for autor in lista_autores if autor not in valores_a_descartar]
+        elif mat=='Au':
+            valores_a_descartar = ['Hagemann', 'Hagemann']
+            filtered_list = [autor for autor in lista_autores if autor not in valores_a_descartar]
+        elif mat=='Bi':
+            valores_a_descartar = ['Hagemann']
+            filtered_list = [autor for autor in lista_autores if autor not in valores_a_descartar]
+        elif mat=='C':
+            valores_a_descartar = ['Hagemann']
+            filtered_list = [autor for autor in lista_autores if autor not in valores_a_descartar]
+        elif mat=='Ca':
+            valores_a_descartar = ['Rodriguez-de_Marcos']
+            filtered_list = [autor for autor in lista_autores if autor not in valores_a_descartar]
+        elif mat=='Cu':
+            valores_a_descartar = ['Hagemann']
+            filtered_list = [autor for autor in lista_autores if autor not in valores_a_descartar]
+        elif mat=='Al2O3':
+            valores_a_descartar = ['Hagemann']
+            filtered_list = [autor for autor in lista_autores if autor not in valores_a_descartar]
+        elif mat=='MoO3':
+            valores_a_descartar = ['Lajaunie-Î±', 'Lajaunie-Î²', 'Lajaunie-Î³']
+            filtered_list = [autor for autor in lista_autores if autor not in valores_a_descartar]
+        elif mat=='SiO':
+            valores_a_descartar = ['Hass']
+            filtered_list = [autor for autor in lista_autores if autor not in valores_a_descartar]
+        elif mat=='MoS2':
+            valores_a_descartar = ['Yim-2nm', 'Yim-3nm', 'Yim-20nm']
+            filtered_list = [autor for autor in lista_autores if autor not in valores_a_descartar]
+        elif mat=='Si':
+            valores_a_descartar = ['Green-1995', 'Daub']
+            filtered_list = [autor for autor in lista_autores if autor not in valores_a_descartar]
+        else:
+            filtered_list = lista_autores
+
+    material3_dropdown.options = filtered_list
 
 material1_dropdown.param.watch(update_author_dropdown, 'value')
 material2_dropdown.param.watch(update_author_dropdown, 'value')
